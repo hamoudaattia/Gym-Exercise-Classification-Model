@@ -1,0 +1,863 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{exercice classification ML}
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb. 
+    \makeatletter
+        \newbox\Wrappedcontinuationbox 
+        \newbox\Wrappedvisiblespacebox 
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}} 
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}} 
+        \newcommand*\Wrappedcontinuationindent {3ex } 
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox} 
+        % Take advantage of the already applied Pygments mark-up to insert 
+        % potential linebreaks for TeX processing. 
+        %        {, <, #, %, $, ' and ": go to next line. 
+        %        _, }, ^, &, >, - and ~: stay at end of broken line. 
+        % Use of \textquotesingle for straight quote. 
+        \newcommand*\Wrappedbreaksatspecials {% 
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}% 
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}% 
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}% 
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}% 
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}% 
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}% 
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}% 
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}% 
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}% 
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}% 
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}% 
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}% 
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}% 
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}% 
+        } 
+        % Some characters . , ; ? ! / are not pygmentized. 
+        % This macro makes them "active" and they will insert potential linebreaks 
+        \newcommand*\Wrappedbreaksatpunct {% 
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}% 
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}% 
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}% 
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}% 
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}% 
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}% 
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}% 
+            \catcode`\.\active
+            \catcode`\,\active 
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active 
+            \lccode`\~`\~ 	
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+        
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active 	
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+    
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{152}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{using} \PY{n}{CSV}
+\PY{k}{using} \PY{n}{DataFrames}
+\PY{k}{using} \PY{n}{MLJ}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{153}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Read the CSV file into a DataFrame}
+\PY{n}{df} \PY{o}{=} \PY{n}{CSV}\PY{o}{.}\PY{n}{read}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{megaGymDataset.csv}\PY{l+s}{\PYZdq{}}\PY{p}{,} \PY{n}{DataFrame}\PY{p}{)}
+
+\PY{c}{\PYZsh{} Display summary statistics of the DataFrame}
+\PY{n}{describe}\PY{p}{(}\PY{n}{df}\PY{p}{)}
+
+\PY{c}{\PYZsh{} Get the number of rows and columns in the DataFrame}
+\PY{n}{nrow}\PY{p}{(}\PY{n}{df}\PY{p}{)}\PY{p}{,} \PY{n}{ncol}\PY{p}{(}\PY{n}{df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{153}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+(2918, 9)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{154}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Select the two columns from the original DataFrame}
+\PY{n}{selected\PYZus{}columns} \PY{o}{=} \PY{n}{df}\PY{p}{[}\PY{o}{:}\PY{p}{,} \PY{p}{[}\PY{l+s+ss}{:Title}\PY{p}{,}  \PY{l+s+ss}{:BodyPart}\PY{p}{]}\PY{p}{]}
+\PY{c}{\PYZsh{} Create a new DataFrame with the selected columns}
+\PY{n}{new\PYZus{}df} \PY{o}{=} \PY{n}{DataFrame}\PY{p}{(}\PY{n}{selected\PYZus{}columns}\PY{p}{)}
+\PY{n}{nrow}\PY{p}{(}\PY{n}{new\PYZus{}df}\PY{p}{)}\PY{p}{,} \PY{n}{ncol}\PY{p}{(}\PY{n}{new\PYZus{}df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{154}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+(2918, 2)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{155}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{schema}\PY{p}{(}\PY{n}{new\PYZus{}df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{155}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+┌──────────┬──────────┬──────────┐
+│ names    │ scitypes │ types    │
+├──────────┼──────────┼──────────┤
+│ Title    │ Textual  │ String   │
+│ BodyPart │ Textual  │ String15 │
+└──────────┴──────────┴──────────┘
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{156}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{using} \PY{n}{Flux}
+
+\PY{n}{X} \PY{o}{=} \PY{n}{new\PYZus{}df}\PY{o}{.}\PY{n}{Title}  \PY{c}{\PYZsh{} Exercise names}
+\PY{n}{y} \PY{o}{=} \PY{n}{new\PYZus{}df}\PY{o}{.}\PY{n}{BodyPart}   \PY{c}{\PYZsh{} Target body parts}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{156}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+2918-element PooledArrays.PooledVector\{String15, UInt32, Vector\{UInt32\}\}:
+ "Abdominals"
+ "Abdominals"
+ "Abdominals"
+ "Abdominals"
+ "Abdominals"
+ "Abdominals"
+ "Abdominals"
+ "Abdominals"
+ "Abdominals"
+ "Abdominals"
+ "Abdominals"
+ "Abdominals"
+ "Abdominals"
+ ⋮
+ "Triceps"
+ "Triceps"
+ "Triceps"
+ "Triceps"
+ "Triceps"
+ "Triceps"
+ "Triceps"
+ "Triceps"
+ "Triceps"
+ "Triceps"
+ "Triceps"
+ "Triceps"
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{157}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Step 2: Feature Extraction}
+\PY{c}{\PYZsh{} In this simple example, we\PYZsq{}ll use one\PYZhy{}hot encoding for the exercise names}
+\PY{n}{X\PYZus{}encoded} \PY{o}{=} \PY{n}{Flux}\PY{o}{.}\PY{n}{onehotbatch}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{sort}\PY{p}{(}\PY{n}{unique}\PY{p}{(}\PY{n}{X}\PY{p}{)}\PY{p}{)}\PY{p}{)} \PY{o}{|\PYZgt{}} \PY{k+kt}{Matrix}\PY{p}{\PYZob{}}\PY{k+kt}{Float32}\PY{p}{\PYZcb{}}
+\PY{n}{X\PYZus{}unique} \PY{o}{=} \PY{n}{sort}\PY{p}{(}\PY{n}{unique}\PY{p}{(}\PY{n}{X}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{157}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+2909-element Vector\{String\}:
+ "1.5-rep push-up"
+ "3/4 sit-up"
+ "30 Arms BFR Close-Grip Push-Up"
+ "30 Arms BFR Dumbbell Kick-Back"
+ "30 Arms BFR High Cable Curl"
+ "30 Arms BFR Machine Preacher Curl"
+ "30 Arms Barbell Skullcrusher"
+ "30 Arms Cable Concentration Curl"
+ "30 Arms Cable Rope Hammer Curl"
+ "30 Arms Cable Rope Overhead Triceps Extension"
+ "30 Arms Cable Rope Push-Down"
+ "30 Arms Cable Straight-Bar Curl"
+ "30 Arms Cable Straight-Bar Push-Down"
+ ⋮
+ "Wide-grip bench press"
+ "Wide-grip hands-elevated push-up"
+ "Windmills"
+ "World's greatest stretch"
+ "Wrist Circles"
+ "Wrist Roller"
+ "X-body V-up"
+ "Yates Row"
+ "Yates Row Reverse Grip"
+ "Yoga plex"
+ "Yoke Walk"
+ "Zercher squat"
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{158}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{using} \PY{n}{Statistics}
+\PY{c}{\PYZsh{} Standardize the input features using z\PYZhy{}score normalization}
+\PY{n}{X\PYZus{}standardized} \PY{o}{=} \PY{p}{(}\PY{n}{X\PYZus{}encoded} \PY{o}{.\PYZhy{}} \PY{n}{mean}\PY{p}{(}\PY{n}{X\PYZus{}encoded}\PY{p}{,} \PY{n}{dims}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)} \PY{o}{./} \PY{n}{std}\PY{p}{(}\PY{n}{X\PYZus{}encoded}\PY{p}{,} \PY{n}{dims}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{158}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+2909×2918 Matrix\{Float32\}:
+ -0.0185408  -0.0185408  -0.0185408  …  -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408  …  -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408  …  -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+  ⋮                                  ⋱   ⋮
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408  …  -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408  …  -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+ -0.0185408  -0.0185408  -0.0185408     -0.0185408  -0.0185408  -0.0185408
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{159}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Encode target labels as integers}
+\PY{n}{label\PYZus{}mapping} \PY{o}{=} \PY{k+kt}{Dict}\PY{p}{(}\PY{n}{unique}\PY{p}{(}\PY{n}{y}\PY{p}{)} \PY{o}{.=\PYZgt{}} \PY{l+m+mi}{1}\PY{o}{:}\PY{n}{length}\PY{p}{(}\PY{n}{unique}\PY{p}{(}\PY{n}{y}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{n}{y\PYZus{}encoded} \PY{o}{=} \PY{p}{[}\PY{n}{label\PYZus{}mapping}\PY{p}{[}\PY{n}{label}\PY{p}{]} \PY{k}{for} \PY{n}{label} \PY{k}{in} \PY{n}{y}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{159}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+2918-element Vector\{Int64\}:
+  1
+  1
+  1
+  1
+  1
+  1
+  1
+  1
+  1
+  1
+  1
+  1
+  1
+  ⋮
+ 17
+ 17
+ 17
+ 17
+ 17
+ 17
+ 17
+ 17
+ 17
+ 17
+ 17
+ 17
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{160}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Step 3: Model Training}
+\PY{c}{\PYZsh{} Split the data into training and testing sets}
+\PY{n}{data} \PY{o}{=} \PY{p}{[}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{)} \PY{k}{for} \PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{)} \PY{k}{in} \PY{n}{zip}\PY{p}{(}\PY{n}{eachrow}\PY{p}{(}\PY{n}{X\PYZus{}encoded}\PY{p}{)}\PY{p}{,} \PY{n}{y\PYZus{}encoded}\PY{p}{)}\PY{p}{]}
+\PY{n}{train\PYZus{}size} \PY{o}{=} \PY{k+kt}{Int}\PY{p}{(}\PY{n}{round}\PY{p}{(}\PY{n}{length}\PY{p}{(}\PY{n}{data}\PY{p}{)} \PY{o}{*} \PY{l+m+mf}{0.8}\PY{p}{)}\PY{p}{)}
+\PY{n}{train\PYZus{}data} \PY{o}{=} \PY{n}{data}\PY{p}{[}\PY{l+m+mi}{1}\PY{o}{:}\PY{n}{train\PYZus{}size}\PY{p}{]}
+\PY{n}{test\PYZus{}data} \PY{o}{=} \PY{n}{data}\PY{p}{[}\PY{n}{train\PYZus{}size}\PY{o}{+}\PY{l+m+mi}{1}\PY{o}{:}\PY{k}{end}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{160}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+582-element Vector\{Tuple\{SubArray\{Float32, 1, Matrix\{Float32\}, Tuple\{Int64,
+Base.Slice\{Base.OneTo\{Int64\}\}\}, true\}, Int64\}\}:
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 15)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 15)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 15)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 15)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 15)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 15)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 15)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 15)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 15)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 15)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 15)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 15)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 15)
+ ⋮
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 17)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 17)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 17)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 17)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 17)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 17)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 17)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 17)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 17)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 17)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 17)
+ ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0], 17)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{176}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Define the model architecture}
+\PY{n}{input\PYZus{}size} \PY{o}{=} \PY{n}{size}\PY{p}{(}\PY{n}{X\PYZus{}encoded}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{n}{model} \PY{o}{=} \PY{n}{Chain}\PY{p}{(}
+    \PY{n}{Dense}\PY{p}{(}\PY{n}{input\PYZus{}size}\PY{p}{,} \PY{l+m+mi}{64}\PY{p}{,} \PY{n}{relu}\PY{p}{)}\PY{p}{,}
+    \PY{n}{Dense}\PY{p}{(}\PY{l+m+mi}{64}\PY{p}{,} \PY{l+m+mi}{32}\PY{p}{,} \PY{n}{relu}\PY{p}{)}\PY{p}{,}
+    \PY{n}{Dense}\PY{p}{(}\PY{l+m+mi}{32}\PY{p}{,} \PY{n}{length}\PY{p}{(}\PY{n}{label\PYZus{}mapping}\PY{p}{)}\PY{p}{)}
+\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{176}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Chain(
+  Dense(2918 => 64, relu),              \textcolor{ansi-black-intense}{\# 186\_816 parameters}
+  Dense(64 => 32, relu),                \textcolor{ansi-black-intense}{\# 2\_080 parameters}
+  Dense(32 => 17),                      \textcolor{ansi-black-intense}{\# 561 parameters}
+) \textcolor{ansi-black-intense}{                  \# Total: 6 arrays, }189\_457 parameters, 740.441
+KiB.
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{177}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Define the loss function}
+\PY{n}{loss}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{)} \PY{o}{=} \PY{n}{Flux}\PY{o}{.}\PY{n}{crossentropy}\PY{p}{(}\PY{n}{softmax}\PY{p}{(}\PY{n}{model}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{Flux}\PY{o}{.}\PY{n}{onehotbatch}\PY{p}{(}\PY{n}{y}\PY{p}{,} \PY{l+m+mi}{1}\PY{o}{:}\PY{n}{length}\PY{p}{(}\PY{n}{label\PYZus{}mapping}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{c}{\PYZsh{} Define the optimizer}
+\PY{n}{optimizer} \PY{o}{=} \PY{n}{Flux}\PY{o}{.}\PY{n}{ADAM}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{177}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Adam(0.001, (0.9, 0.999), 1.0e-8, IdDict\{Any, Any\}())
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{178}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Train the model}
+\PY{k}{for} \PY{n}{epoch} \PY{k}{in} \PY{l+m+mi}{1}\PY{o}{:}\PY{l+m+mi}{10}
+    \PY{n}{Flux}\PY{o}{.}\PY{n}{train!}\PY{p}{(}\PY{n}{loss}\PY{p}{,} \PY{n}{Flux}\PY{o}{.}\PY{n}{params}\PY{p}{(}\PY{n}{model}\PY{p}{)}\PY{p}{,} \PY{n}{train\PYZus{}data}\PY{p}{,} \PY{n}{optimizer}\PY{p}{)}
+\PY{k}{end}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{179}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Step 4: Model Evaluation}
+\PY{c}{\PYZsh{} Make predictions on the test set}
+\PY{n}{X\PYZus{}test} \PY{o}{=} \PY{p}{[}\PY{n}{x} \PY{k}{for} \PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{\PYZus{}}\PY{p}{)} \PY{k}{in} \PY{n}{test\PYZus{}data}\PY{p}{]}
+\PY{n}{y\PYZus{}test} \PY{o}{=} \PY{p}{[}\PY{n}{y} \PY{k}{for} \PY{p}{(}\PY{n}{\PYZus{}}\PY{p}{,} \PY{n}{y}\PY{p}{)} \PY{k}{in} \PY{n}{test\PYZus{}data}\PY{p}{]}
+\PY{n}{y\PYZus{}pred} \PY{o}{=} \PY{n}{Flux}\PY{o}{.}\PY{n}{argmax}\PY{p}{(}\PY{n}{model}\PY{o}{.}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}\PY{p}{,} \PY{n}{dims}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{179}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+582-element Vector\{Int64\}:
+   1
+   2
+   3
+   4
+   5
+   6
+   7
+   8
+   9
+  10
+  11
+  12
+  13
+   ⋮
+ 571
+ 572
+ 573
+ 574
+ 575
+ 576
+ 577
+ 578
+ 579
+ 580
+ 581
+ 582
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{180}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Calculate accuracy}
+\PY{n}{accuracy} \PY{o}{=} \PY{n}{sum}\PY{p}{(}\PY{n}{y\PYZus{}pred} \PY{o}{.==} \PY{n}{reshape}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{o}{:}\PY{p}{)}\PY{o}{\PYZsq{}}\PY{p}{)} \PY{o}{/} \PY{n}{length}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{)}
+
+\PY{n}{println}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{Accuracy: }\PY{l+s+si}{\PYZdl{}accuracy}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Accuracy: 1.0
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{181}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{println}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{Dimension of X\PYZus{}encoded: }\PY{l+s}{\PYZdq{}}\PY{p}{,} \PY{n}{size}\PY{p}{(}\PY{n}{X\PYZus{}encoded}\PY{p}{)}\PY{p}{)}
+\PY{n}{println}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{Dimension of X\PYZus{}standardized: }\PY{l+s}{\PYZdq{}}\PY{p}{,} \PY{n}{size}\PY{p}{(}\PY{n}{X\PYZus{}standardized}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Dimension of X\_encoded: (2909, 2918)
+Dimension of X\_standardized: (2909, 2918)
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{182}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Step 5: Model Deployment}
+\PY{c}{\PYZsh{} You can now use the trained model to make predictions on new exercise names}
+
+\PY{n}{exercise\PYZus{}name} \PY{o}{=} \PY{l+s}{\PYZdq{}}\PY{l+s}{Wrist Roller}\PY{l+s}{\PYZdq{}} \PY{c}{\PYZsh{} Example exercise name for prediction}
+\PY{n}{exercise\PYZus{}encoded} \PY{o}{=} \PY{n}{Flux}\PY{o}{.}\PY{n}{onehotbatch}\PY{p}{(}\PY{p}{[}\PY{n}{exercise\PYZus{}name}\PY{p}{]}\PY{p}{,} \PY{n}{sort}\PY{p}{(}\PY{n}{unique}\PY{p}{(}\PY{n}{X}\PY{p}{)}\PY{p}{)}\PY{p}{)} \PY{o}{|\PYZgt{}} \PY{k+kt}{Matrix}\PY{p}{\PYZob{}}\PY{k+kt}{Float32}\PY{p}{\PYZcb{}}
+\PY{n}{predicted\PYZus{}body\PYZus{}part} \PY{o}{=} \PY{n}{Flux}\PY{o}{.}\PY{n}{argmax}\PY{p}{(}\PY{n}{model}\PY{p}{(}\PY{n}{exercise\PYZus{}encoded}\PY{p}{)}\PY{p}{,} \PY{n}{dims}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
+
+\PY{n}{inverse\PYZus{}label\PYZus{}mapping} \PY{o}{=} \PY{n}{invert}\PY{p}{(}\PY{n}{label\PYZus{}mapping}\PY{p}{)}
+\PY{n}{predicted\PYZus{}body\PYZus{}part\PYZus{}label} \PY{o}{=} \PY{n}{inverse\PYZus{}label\PYZus{}mapping}\PY{p}{[}\PY{n}{predicted\PYZus{}body\PYZus{}part}\PY{p}{]}
+
+\PY{n}{println}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{Predicted body part: }\PY{l+s+si}{\PYZdl{}predicted\PYZus{}body\PYZus{}part\PYZus{}label}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}, frame=single, framerule=2mm, rulecolor=\color{outerrorbackground}]
+DimensionMismatch: layer Dense(2918 => 64, relu) expects size(input, 1) == 2918, but got 2909×1 Matrix\{Float32\}
+
+Stacktrace:
+ [1] \_size\_check(layer::Dense\{typeof(relu), Matrix\{Float32\}, Vector\{Float32\}\}, x::Matrix\{Float32\}, ::Pair\{Int64, Int64\})
+   @ Flux C:\textbackslash{}Users\textbackslash{}LENOVO\textbackslash{}.julia\textbackslash{}packages\textbackslash{}Flux\textbackslash{}EHgZm\textbackslash{}src\textbackslash{}layers\textbackslash{}basic.jl:195
+ [2] (::Dense\{typeof(relu), Matrix\{Float32\}, Vector\{Float32\}\})(x::Matrix\{Float32\})
+   @ Flux C:\textbackslash{}Users\textbackslash{}LENOVO\textbackslash{}.julia\textbackslash{}packages\textbackslash{}Flux\textbackslash{}EHgZm\textbackslash{}src\textbackslash{}layers\textbackslash{}basic.jl:171
+ [3] macro expansion
+   @ C:\textbackslash{}Users\textbackslash{}LENOVO\textbackslash{}.julia\textbackslash{}packages\textbackslash{}Flux\textbackslash{}EHgZm\textbackslash{}src\textbackslash{}layers\textbackslash{}basic.jl:53 [inlined]
+ [4] \_applychain
+   @ C:\textbackslash{}Users\textbackslash{}LENOVO\textbackslash{}.julia\textbackslash{}packages\textbackslash{}Flux\textbackslash{}EHgZm\textbackslash{}src\textbackslash{}layers\textbackslash{}basic.jl:53 [inlined]
+ [5] (::Chain\{Tuple\{Dense\{typeof(relu), Matrix\{Float32\}, Vector\{Float32\}\}, Dense\{typeof(relu), Matrix\{Float32\}, Vector\{Float32\}\}, Dense\{typeof(identity), Matrix\{Float32\}, Vector\{Float32\}\}\}\})(x::Matrix\{Float32\})
+   @ Flux C:\textbackslash{}Users\textbackslash{}LENOVO\textbackslash{}.julia\textbackslash{}packages\textbackslash{}Flux\textbackslash{}EHgZm\textbackslash{}src\textbackslash{}layers\textbackslash{}basic.jl:51
+ [6] top-level scope
+   @ In[182]:4
+    \end{Verbatim}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
